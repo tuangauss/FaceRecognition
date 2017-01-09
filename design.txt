@@ -1,0 +1,191 @@
+                                THE ULTIMATE GUIDE TO TUAN'S EPIC FACIAL RECOGNTION WEBAPP DESIGN
+****** This document explains in details the general design, key function, problems and solutions of this epic Facial Recognition app
+****** Please refer to documentation.txt for more info about the aim, purpose and relevant resources
+
+Structure of the documentation:
+
+A. General design:
+    1. Idea:
+    2. General problem and solution
+    3. Front-end :
+    4. Back-end :
+
+B. Specific running file explanation:
+    1. Build a database:
+        a. create_group.py
+        b. add_data.py
+        c. train_group.py
+        d. Database.db
+    2. Actually running of the webapp:
+        a. application.py:
+        b. Helpers.py
+
+=================================================================================================
+=================================================================================================
+A. General design:
+    1. Idea:
+    
+    This webapp employs the Microsoft Cognitive Service API to detect faces in uploaded photos and identify a celebrity from a 
+pre-built database with most similar facial features
+
+    Why Microsoft Cognitive Service:
+    - Initially, I want to use Python's openface library (based on opencv), but there are some serious issues about installing opencv
+on Cloud9
+    - Thus, I used the Microsoft Cognitive Face API and employed it resources on facial recognition, facial detection, and facial analysis
+    - The main drawback with the MSC Face API is that it does not have a current library of faces available, so I have to build a library of faces from scratch
+    - For comparison, openface has access to the "Labelled faces in the Wild" library of more than 1000 faces (my libary so far has only 200 faces)
+    - The nice thing is I get to choose which celebrities to include (don't be surprise when you see proportionally way too many Korean
+pop stars and European soccer stars)
+
+    2. General problem and solutions:
+    a. Build a library in MSC:
+    - As explained, I have to build a library on my own
+    - I did it laboriously by adding faces using add_data.py
+    - In restropect, I could have automated the process by scraping through Google Image for photos of celebrities in a "celebrities.txt" file
+    
+    b. MSC' quota API:
+    - This is not really a problem (I thought it was), since MSC offers 30k calls per month
+    - Though this may be a concern if I am to build a more extensive libraries
+    
+    c. MSC' only acceptance of public url:
+    - So Microsoft cognitive Service only accepts photo sent as a public url (think https:..../image.jpg)
+    - Files and pure images (Webcam snapshot) cannot be read
+    
+    - My solution is to upload the later two format (local file and webcam snapshot) to Dropbox, using Dropbox API
+    - By simple modification, I can expose these uploaded files to a public url, ready for analysis by MSC
+    
+    d. Webcam:
+    - I use webcam.js library to incorporate the webcam in our app
+    - Through experiments, webcam does not work in Chrome for Windows 10. Webcam only works in Microsoft Edge
+    - If you are using Mac, make sure you are using the browser that your Mac supports
+    
+    3. Front end:
+    Not so much design except for general stylistic design as shown in styles.css file
+    Many of the design is derived form the CS50's available resources
+    Suggestions were also taken from stackoverflow.com
+    
+    Webcam:
+    Webcam is coded into the program through webcam.js and webcam.swf
+    Specific code to use the webcam can be found in selfie.html (/templates)
+    For more detail information, please visit: https://github.com/jhuckaby/webcamjs
+    
+    Templates:
+    Several .html templates are used throughout this porjects
+    
+    4. Back-end:
+    The back-end involves many function files that will be explained in more details in part B
+    
+    
+    
+B. Specific back-end files explanation:
+    1. Build a database:
+        ***** Notice that all these codes are run in the IDE
+        
+        a. create_group.py:
+            - Code that send request to Microsoft cognitive service API to assign us a group (that will contain many identities)
+            - only need to use once
+            - A group has already been created, "database"
+            
+        b. add_data.py:
+            - Sending requests to MSC Face API to add a person and TWO pictures of that person into the database
+            - Have to be done manually for each person
+            - require "name" and "url1", "url2"
+            - MSC Face API will handle two tasks:
+                + register a person and return a "personID"
+                + analyze facial features of the two photos and assign it under that "personID"
+                *** Notice how Face API communicates by "personID", not "name"
+            - Once the faces are successfully added, we add the following information to our SQL database:
+                + name: our input name
+                + personID: the one FaceAPI assigns
+                + url: url1 (a photo that we can use for display)
+        
+        c. train_group.py:
+            - As explained in document.txt, MSC Face API requires us to manually train our data
+            - This is done by us sending the request to MSC to train
+            - The method is to wait until we add many indentities (doesn't really matter: 1, 10, 10000), and then train it, then
+            continue adding. Or you can wait until finish adding every identities and then train
+            - You only need to call it once for the entire dataset
+            - But once you add in more faces, you have to call it again
+        
+        d. SQL database:
+            - As clarification, SQL serves a storage for the LINK to our actual information, not information itself
+            - For example, it stores:
+                + name: name of the celebrities
+                + personID: the personID of a celebrity in our dataset
+                + url: link to an image of the celebrity
+            
+            - It does not, however, stores:
+                + Actual photos of the celebrities (stored by Microsoft Face API)
+                + Actual files we upload (stored by Dropbox)
+                + Actual selfie we take by Webcam (stored by Dropbox)
+                
+            - Then why bother SQL?
+                + Remember how MSC only communicates by personID
+                + People enjoy knowing that they look like "Keanu Reeves" or "Scarlett Johansson" (How's it spelt again)
+                + not "acac197r9q8-cjcqn" or "1yc9qhcncqkdnco"
+                + SQL is really a dictionary to store the "name" of the celebrities and it serves as a reference table for us to actually get the real name
+                + Also, by storing url of the celebrity's image, it makes displaying image much easier (rather than calling MSC again to return the image)
+                
+                
+    2. Actual running of the webapp:  
+        a. Application.py:
+            This file contains all the actual implementation of the app:
+            
+            - importing relevant libraries
+            
+            - Configure SQL database
+            
+            - passurl route:
+                + Option for users to pass URL of an image from the web
+                + Notice how it calls function detect_identify from helpers.py
+            
+            - folder route:
+                + Option for users to upload a local image file to Dropbox and analyze it
+                + Notice how it calls "request.files['file']" to get the file as a "POST" method
+                + It also calls function UPLOAD and CREATE_URL form helpers.py to upload file to Dropbox and create a public url
+                + Then it calls DETECT_IDENTITY from helpers.py to analyze the photo
+                
+            - selfie route:
+                + Option for users to take a selfie 
+                + Notice how it calls "data = request.form['mydata']" to read data taken by webcamjs
+                + then it only calls function "str(uuid.uuid4()) + ".jpg" to create a random name
+                + "write(base64.b64decode(data))" is then used to write the image data to a newly created jpg file
+                + then UPLOAD, CREATE_URL and DETECT_IDENTITY is called to conduct analysis
+            
+            - index:
+                + making sure user export their API keys before running "flask run"
+        
+        b. Helpers.py:
+            - import relebant libraries
+            
+            - apology:
+                + function that get called when some data input problem occurs
+                + yes, I use the CS50 apology function from pset7 for this
+                
+            - detect_identify:
+                + send request to Microsoft Face API to do exactly 2 jobs: detect the face, identify who looks like you the most
+                + please see the comment on the code for detail explanation
+                + notice how we use SQL command to retrieve the name of the "celebrity" from the result "personID"
+                
+            - upload:
+                + upload file to Dropbox API
+                + please see the comments on the code for detailed explation
+                
+            - create_url:
+                + modify the url link on dropbox to a format MSC can read
+                + very straight forward process using split and concatenating string
+                
+                
+                
+                
+                
+                
+        
+            
+            
+            
+            
+            
+            
+            
+    

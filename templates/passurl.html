@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Pass Url
+{% endblock %}
+
+{% block main %}
+    <p1 style = "text-align: center, font-family: courier, font-size: 160%"> Please be aware that only valid url (urls of Facebook images also work) will activate the program </p>
+    <form action="{{ url_for('passurl') }}" method="post">
+        <fieldset>
+            <div class="form-group">
+                <input autocomplete="off" autofocus class="form-control" name="passurl" placeholder="Please pass in a valid url " type="text"/>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-default" type="submit">Submit</button>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

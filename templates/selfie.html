@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Selfie
+{% endblock %}
+
+{% block main %}
+<h3 style = "text-align: center, font-family: verdana, font-size: 200%"> Warning: Excessive facial expressions will trouble the app's ability to detect your face</h3>
+<script src="{{ url_for('static', filename='webcam.js') }}"></script>
+
+<div id="my_camera" style="width:320px; height:320px;"></div>
+
+<!-- A button for taking snaps -->
+<form id="myform" method="post" action="" >
+    <input id="mydata" type="hidden" name="mydata" value=""/>
+</form>
+
+
+<script language="JavaScript">
+
+    Webcam.attach('#my_camera');
+
+    function take_snapshot() {
+        Webcam.snap(function(data_uri) {
+            var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
+            document.getElementById('mydata').value = raw_image_data;
+            document.getElementById('myform').submit();
+        });
+    }
+</script>
+
+<a href="javascript:void(take_snapshot())">Take an awesome selfie</a>
+
+
+{% endblock %}

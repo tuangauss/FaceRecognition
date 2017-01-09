@@ -1,0 +1,247 @@
+                        THE ULTIMATE GUIDE TO TUAN'S EPIC FACIAL RECOGNTION WEBAPP
+                        
+**** This guide provides a brief overview of how to understand, compile and run Tuan Nguyen Doan's epic FACIAL RECOGNITION
+**** WARNING: this documentation may be dull, but the actual implementation and running of the app is an exciting, wholesome and life-fullfiling experience
+
+
+Structure of the documentation:
+    1. Overview:
+        a. Aim and purpose
+        b. Basic idea
+        c. Resources
+        d. Acknowledgement and credits
+    
+    2. How to use:
+    
+        a. Activate the webapp
+        
+        b. User-interface
+            - Pass a url
+            - Upload a file
+            - Take a selfie
+        
+        c. Back-end process
+        
+
+    
+1. Overview:
+
+    a. Aim and purpose:
+    
+    This projects aim to replace the pseudo-facial recognition app that was prominently floating around on Facebook a while ago,
+where you are randomly assigned with a random celebrity figure (I was recognized as a 90% match with Beneditch Cumberbatch in one app
+so you get the idea)
+    My app aims to use machine learning algorithm to rigourously analyze facial features of a person and idenity (using statiscial techniques
+such as discriminating analysis) to identify who you really look like
+    However, I obviously did not come up with the actually implementation of the machine learning algorithm and statistical analysis.
+So this project, in essence, is more of a webapp that employs the resources by Microsoft cognitive service face API (MSC). The handling of
+facial analysis and discriminating analysis is handled by Microsoft Cognitive service
+
+    
+    b. Basic idea:
+    
+    This projects is a webapp that serves as a platform to receive image data from users (url, file, snapshot), send request to 
+MSC, and display results on a html platform.
+    The process of what happened under the hood is as follows:
+    - When a file (url, file, snapshot) is submitted by the user
+    - The file is sent to Microsoft cognitive service for analysis
+    - the microsoft cognitive service will recognize the facial features in the photo and assign these features with a person ID
+    - we send another request to MSC, asking it to compare this person ID with all the celebrities (each of whom also has a distinct
+person ID), and return to us the ONE celebrities whose facial features (in quantitative data) are most similar to the person being analyzed
+    - We search through our SQL data, identify the name of the celebrity, and a url to his/her face
+    - This allows us to display as a nice result html
+    
+    However, there are some other features going on:
+    - If the submitted item is a url, MSC can handle them with no problem
+    - However, if it is a file or a snapshot image, MSC cannot handle and process them
+    - The solution to this problem is that our file (local image file or snapshot from Javascript) has to be uploaded to a public host
+and received a public url
+    - This process is handled by DROPBOX API
+    
+    c. Resources:
+    This projects make use of these several publicly-open resources. It does not attain any code or data with discrete or restricted use.
+All the resources can be found easily and used legally by their respective oweners:
+
+    - Microsoft Cognitive Service FACE API: 
+    link: https://www.microsoft.com/cognitive-services/en-us/face-api
+    This is a powerful API that allows us to detect, analyze and compare faces
+    My project uses this FACE API to detect the face in a submitted image file, host a library of celebrities, and compare the face
+with this libraries. MSC does not specify their facial recognition algorithm, but a runthrough over their features reveal that their 
+algorithm is able to pick up several facial features: (width, height, length of face rectangle), size of pupils, ratios between eye distant and nose
+, glasses or non-glasses, hair, eyebrown, beard, lips, ear, etc
+    More information of how the Microsoft cognitive service API is implemented and called can be found in design.txt
+    
+    - Dropbox API:
+    link: https://www.dropbox.com/developers
+    This is a powerful API that allows us to upload image file to dropbox, expose these images publicly and gain a public url for our image file
+    This is used when our submitted item does not have a public Internet-based url yet (file from local directory, or Javascript snapshot).
+Without a publicly-recognized url, MSC cannot read and process these items.
+    The Dropbox API overcomes this challenge and allow an item to be uploaded as a .jpeg file. More importantly, it assigns our file with a 
+public url that allows for analysis by MSC
+
+    - WebcamJS:
+    link: https://github.com/jhuckaby/webcamjs
+    This Javascript library allows us to take a selfie directly by our webcam
+    This allows us to interactively take a photo and submit the file to Dropbox, then to MSC for analysis and result immediately
+    In other words, WebcamJS adds a whole new level of interactivity and "awesomeness" to my project, allowing people at the fair to 
+have fun.
+
+    - CS50 resources:
+    This project uses many publicly-available resources from the courtesy of the CS50's course
+    Notable resouces include:
+    - Codes from problem set 7 (apology function, Flask implementation, running of SQL)
+    - Styles.css 
+    - Suggestion of necessary libaries
+    
+    
+    d. Acknowledgements and credits:
+    
+    ***** Disclaimer:
+    This project is solely for educational purposes. I make absolutely no attempt to claim ownership over any publicly-available resources
+that I found helpful during the process of coding, including but not limited to open-resources API, google image files, suggested API codes,...
+All rights reserved to the legal owners of these materials. I made all attempts, though not comprehensively and rigorously, to cite these resources
+appropriately
+
+    As part of the CS50 project, and in recognition of the effort anyone puts in to understand my code and run it during assessment, I'm willing to leave my
+secret access key to MSC Face API and Dropbox API exposed. (This is because another input key requires a new library from MSC, new hosted location,
+new SQL database). However, I explicitly restrict the reading of my code (and the keys). I grant noone the rights to use my keys for any 
+purposes other than what is written in this project's codes. 
+
+
+    ***** Credits:
+    I'm grateful to my CS50 TA, Eric, who has been very supportive of my idea from the starting point
+    I also want to express my thank to my suitemate, John Amadeo, who suggests me the Microsoft Cognitive API when I cannot install
+opencv on the CS50 IDE
+    Also, massive thanks to all the random friends who I have been pestering to take their selfie and test my library over the last 3 weeks
+    
+
+2. How to use the webapp:
+    
+    The use of the apps should be intuitional. More information of how these features are implemented and coded can be found in
+design.txt
+    
+    a. Activate the app:
+        The webapp shall be activated using the simple process below:
+        
+        + Export Microsoft Cognitive Service key
+        Code:
+        export Microsoft_key=key
+        (Please contact Tuan for access to an available training set)
+        
+        + Export Dropbox API key:
+        Code:
+        export Dropbox_key=key
+        (Different from Microsoft Cognitive Service key, Dropbox API can be configured by different users. In other words,
+    the app works perfectly with any Dropbox API key. More details at: https://www.dropbox.com/developers)
+    
+        + flask run
+        
+        + To see the internal structure of the database: 
+            phpliteadmin database.db
+    
+    
+    b. User-interface:
+        - Pass a url (passurl): you can directly pass a url of any images you find on the web. However, Microsoft Cognitve service Face API
+    does not specify explicitly what url is considered "valid". Through trial-and-error, it always works if the url ends with .jpeg,
+    .png, .jpg. Extension of these endings (such as "...../image.jpg?= 5aghavnaia) may work in some cases and not others
+    
+    Pro-tip: url link for facebook image works all the time (even though they have img.jpg?=gacnaia1rqfqd format)
+    
+        - Upload a file (folder): this feature allows user to upload a file directly from a local directory (think C://files/document/image.jpg)
+    and send request to MSC for analysis. However, as explained above, what happens under the hood is that the file will be uploaded to 
+    Dropbox, gain a public url, before being processed
+    
+        - Take a snapshot (selfie): this feature allows user to take a selfie by a webcam, facilitated by webcamJS. It works similarly to Upload file 
+    feature: uploading the file to Dropbox and gaining the public url before sending to MSC for analysis
+    
+
+    c. Back-end feature:
+    The backend of the code includes the following feature. More information on these features can be found in design.txt:
+    - Running code in python: the files and their respective functions are below:
+        + static: all Javascript and style related library, contating style.css (from CS50 resrouces) and web.js
+        + templates: html files that will be rendered under specific condition
+        
+        Files that run in IDE:
+        + create_group.py: sending a request to MSC to create a new group
+            for this project, a group has been created, namely "database"
+        +add_data.py: this files allows us to add names and picture you wnat to associate with that faces on API
+            Notably, these faces and associated pictures are analyzed and the data is hosted at MICROSOFT, not on my SQL
+            So the majority of the code is actually calling function to MCS to request action and retrieve information
+        +train_group.py: after we add lots of faces and photos into our assigned space in microsoft database, we have to train it
+        before it is able to run any comparison analysis, and making connection between different faces of different identities
+        + application.py: all the functions go here, please see design.txt for more detail
+        + helpers.py: the crux of my project, please see design.txt for more detail
+    
+    - SQL database:
+        As explained above, the database does not actually store the image, data of the image, or data retrieved from MSC
+        SQL database is a reference table, allowing us to:
+        - Connect our result with the real name (since MSC only communicates by a their specific person id: cavavahqir91)
+        - store a url to an image for display (it does not store an image)
+        
+        Columns of the SQL table:
+        Name: real names of the celebrities
+        Person ID: the id MSC returns to us once we submit an item
+        image url: the url of an image to the celebrity 
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
