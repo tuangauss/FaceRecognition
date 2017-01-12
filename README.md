@@ -42,7 +42,7 @@ Please refer to ```documentation.txt``` , ```design.txt`` for more details
 * <i>The result will look more or less like this: </i>
 ![picture alt](https://dl.dropboxusercontent.com/s/bgm5afv60y80iie/15271969_1182880761758998_8380260523108213761_o.jpg)
 
-* I have made a short Youtube [video](https://youtu.be/-9il1HhM4F4)
+* I have also made a short Youtube [video](https://youtu.be/-9il1HhM4F4) to illustrate what this webapp can do
 ## Authors
 
 * **Tuan Nguyen Doan** - *Initial work* - [tuangauss](https://github.com/tuangauss)
