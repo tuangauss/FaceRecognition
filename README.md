@@ -40,7 +40,7 @@ There are several steps you have to do before you can actually test the program.
 Please refer to ```documentation.txt``` , ```design.txt`` for more details
 
 * <i>The result will look more or less like this: </i>
-![picture alt](dl.dropboxusercontent.com/s/bgm5afv60y80iie/15271969_1182880761758998_8380260523108213761_o.jpg?dl=0)
+![picture alt](https://dl.dropboxusercontent.com/s/bgm5afv60y80iie/15271969_1182880761758998_8380260523108213761_o.jpg)
 
 * I have made a short Youtube [video](https://youtu.be/-9il1HhM4F4)
 ## Authors
